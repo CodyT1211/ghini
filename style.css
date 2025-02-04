@@ -1,12 +1,18 @@
-/* Ensure body takes up at least 100% height */
-body {
-    font-family: Arial, sans-serif;
+/* Ensure body and html take up full height */
+html, body {
+    height: 100%;
     margin: 0;
     padding: 0;
-    height: 100%; /* Ensures the body takes the full height of the viewport */
+    overflow-y: auto;  /* Adds a vertical scrollbar if content overflows */
     box-sizing: border-box;
+}
+
+/* Body setup with flexbox to keep footer at bottom */
+body {
     display: flex;
     flex-direction: column;
+    min-height: 100%;
+    font-family: Arial, sans-serif;
 }
 
 /* Header styles */
@@ -48,6 +54,8 @@ h2 {
 /* Biography section editable area */
 #bio-content {
     min-height: 100px;
+    max-height: 400px;   /* Set max height to allow scrolling */
+    overflow-y: auto;    /* Enable scrolling if content exceeds max height */
     padding: 10px;
     border: 1px solid #ccc;
     margin-bottom: 20px;
@@ -79,24 +87,32 @@ button:hover {
     background-color: #45a049;
 }
 
-/* Prevent footer from being cut off */
+/* Tribute list section with scrolling */
+#tribute-list {
+    max-height: 300px;   /* Set max height for the tribute list */
+    overflow-y: auto;    /* Enable vertical scrolling */
+    margin-top: 20px;
+    border: 1px solid #ccc;
+    padding: 10px;
+}
+
+/* Footer should stay at the bottom */
 footer {
-    margin-top: auto; /* Pushes footer to the bottom */
+    margin-top: auto;  /* Push footer to the bottom */
     background-color: #333;
     color: white;
     text-align: center;
     padding: 10px 0;
 }
 
-/* Make sure the page can scroll */
-html, body {
-    height: 100%;
-    overflow-x: hidden;
-}
-
 /* Ensure content doesn't overlap buttons or sections */
 #tribute-list {
     margin-top: 20px;
+}
+
+/* Prevent horizontal scroll and ensure responsiveness */
+html, body {
+    overflow-x: hidden;
 }
 
 /* Responsive design (for smaller screens) */
