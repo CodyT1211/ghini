@@ -28,17 +28,22 @@
         <!-- Image Gallery Goes Here -->
     </section>
 
-    <section id="guestbook">
-        <h2>Leave a Tribute</h2>
-        <form id="tribute-form">
-            <input type="text" placeholder="Your Name" id="name" required>
-            <textarea placeholder="Your Message" id="message" required></textarea>
-            <button type="submit">Post Tribute</button>
-        </form>
-        <div id="tribute-list">
-            <!-- User tributes will appear here -->
-        </div>
-    </section>
+   <section id="guestbook">
+    <h2>Leave a Tribute</h2>
+    
+    <!-- Form to collect name and message -->
+    <form id="tribute-form">
+        <input type="text" id="name" placeholder="Your Name" required>
+        <textarea id="message" placeholder="Your Message" required></textarea>
+        <button type="submit">Post Tribute</button>
+    </form>
+
+    <!-- Where the tributes will appear -->
+    <div id="tribute-list">
+        <!-- Dynamic tributes will show up here -->
+    </div>
+</section>
+
 
     <footer>
         <p>&copy; 2025 Memorial Site</p>
