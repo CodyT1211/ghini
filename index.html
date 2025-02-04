@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>In Memory of [Name]</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>In Memory of [Name]</h1>
+        <nav>
+            <ul>
+                <li><a href="#biography">Biography</a></li>
+                <li><a href="#gallery">Gallery</a></li>
+                <li><a href="#guestbook">Tributes</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section id="biography">
+        <h2>Biography</h2>
+        <p>[Biography content]</p>
+    </section>
+
+    <section id="gallery">
+        <h2>Gallery</h2>
+        <!-- Image Gallery Goes Here -->
+    </section>
+
+    <section id="guestbook">
+        <h2>Leave a Tribute</h2>
+        <form id="tribute-form">
+            <input type="text" placeholder="Your Name" id="name" required>
+            <textarea placeholder="Your Message" id="message" required></textarea>
+            <button type="submit">Post Tribute</button>
+        </form>
+        <div id="tribute-list">
+            <!-- User tributes will appear here -->
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; 2025 Memorial Site</p>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>

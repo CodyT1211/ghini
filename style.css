@@ -1,0 +1,59 @@
+/* Basic Page Styling */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+}
+
+header {
+    background-color: #282828;
+    color: white;
+    padding: 1em;
+    text-align: center;
+}
+
+header nav ul {
+    list-style: none;
+    padding: 0;
+}
+
+header nav ul li {
+    display: inline;
+    margin-right: 10px;
+}
+
+header nav ul li a {
+    color: white;
+    text-decoration: none;
+}
+
+section {
+    margin: 20px;
+}
+
+#guestbook form {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 20px;
+}
+
+#guestbook input, #guestbook textarea {
+    padding: 10px;
+    margin-bottom: 10px;
+    width: 100%;
+}
+
+#tribute-list {
+    margin-top: 20px;
+}
+
+footer {
+    text-align: center;
+    background-color: #282828;
+    color: white;
+    padding: 10px;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+}
