@@ -16,6 +16,12 @@ body {
 }
 
 /* Header styles */
+#header-image {
+    width: 150px; /* Adjust size */
+    height: auto;
+    margin-right: 20px; /* Space between image and text */
+    float: left; /* Align image to the left */
+}
 header {
     background-color: #333;
     color: white;
