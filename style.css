@@ -1,100 +1,111 @@
-/* Basic Page Styling */
+/* Ensure body takes up at least 100% height */
 body {
     font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
     margin: 0;
     padding: 0;
+    height: 100%; /* Ensures the body takes the full height of the viewport */
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
 }
 
+/* Header styles */
 header {
-    background-color: #282828;
+    background-color: #333;
     color: white;
-    padding: 1em;
+    padding: 10px 20px;
     text-align: center;
 }
 
-header nav ul {
-    list-style: none;
+/* Navigation styles */
+nav ul {
+    list-style-type: none;
     padding: 0;
 }
 
-header nav ul li {
+nav ul li {
     display: inline;
-    margin-right: 10px;
+    margin: 0 10px;
 }
 
-header nav ul li a {
+nav ul li a {
     color: white;
     text-decoration: none;
 }
 
+/* Section styles */
 section {
     margin: 20px;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
 }
 
-#guestbook form {
-    display: flex;
-    flex-direction: column;
+h2 {
+    color: #333;
+}
+
+/* Biography section editable area */
+#bio-content {
+    min-height: 100px;
+    padding: 10px;
+    border: 1px solid #ccc;
     margin-bottom: 20px;
 }
 
-#guestbook input, #guestbook textarea {
-    padding: 10px;
-    margin-bottom: 10px;
-    width: 100%;
-}
-
-#tribute-list {
-    margin-top: 20px;
-}
-
-footer {
-    text-align: center;
-    background-color: #282828;
-    color: white;
-    padding: 10px;
-    position: fixed;
-    bottom: 0;
-    width: 100%;
-}
-/* Style the tribute form */
+/* Guestbook (tribute) section styles */
 #tribute-form {
     margin-bottom: 20px;
 }
 
-#tribute-form input, #tribute-form textarea {
+input, textarea {
+    padding: 8px;
     width: 100%;
-    padding: 10px;
     margin: 5px 0;
     border: 1px solid #ccc;
+    border-radius: 4px;
 }
 
-#tribute-form button {
-    padding: 10px 15px;
-    background-color: #2ecc71;
+button {
+    padding: 10px 20px;
+    background-color: #4CAF50;
     color: white;
     border: none;
+    border-radius: 4px;
     cursor: pointer;
 }
 
-#tribute-form button:hover {
-    background-color: #27ae60;
+button:hover {
+    background-color: #45a049;
 }
 
-/* Style for each tribute */
-.tribute {
-    padding: 15px;
-    margin-bottom: 20px;
-    background-color: #f4f4f4;
-    border-radius: 5px;
+/* Prevent footer from being cut off */
+footer {
+    margin-top: auto; /* Pushes footer to the bottom */
+    background-color: #333;
+    color: white;
+    text-align: center;
+    padding: 10px 0;
 }
 
-.tribute h3 {
-    margin: 0;
-    font-size: 18px;
+/* Make sure the page can scroll */
+html, body {
+    height: 100%;
+    overflow-x: hidden;
 }
 
-.tribute p {
-    font-size: 16px;
-    color: #555;
+/* Ensure content doesn't overlap buttons or sections */
+#tribute-list {
+    margin-top: 20px;
+}
+
+/* Responsive design (for smaller screens) */
+@media (max-width: 600px) {
+    nav ul {
+        text-align: center;
+    }
+    nav ul li {
+        display: block;
+        margin: 5px 0;
+    }
 }
