@@ -3,12 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>In Memory of Frank Grimes</title>
+    <title>In Memory of [Name]</title>
     <link rel="stylesheet" href="style.css">
+    
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.9.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.9.1/firebase-firestore.js"></script>
 </head>
 <body>
     <header>
-        <h1>In Memory of Frank Grimes</h1>
+        <h1>In Memory of [Name]</h1>
         <nav>
             <ul>
                 <li><a href="#biography">Biography</a></li>
@@ -18,165 +22,101 @@
         </nav>
     </header>
 
+    <!-- Biography Section -->
     <section id="biography">
-    <h2>Biography</h2>
-    <div id="bio-content" contenteditable="true">
-        <p>Click here to edit the biography.</p>
-    </div>
-</section>
+        <h2>Biography</h2>
+        <div id="bio-content" contenteditable="true">
+            <p>Click here to edit the biography.</p>
+        </div>
+    </section>
 
+    <!-- Gallery Section -->
     <section id="gallery">
         <h2>Gallery</h2>
         <!-- Image Gallery Goes Here -->
     </section>
 
-   <section id="guestbook">
-    <h2>Leave a Tribute</h2>
-    
-    <!-- Form to collect name and message -->
-    <form id="tribute-form">
-        <input type="text" id="name" placeholder="Your Name" required>
-        <textarea id="message" placeholder="Your Message" required></textarea>
-        <button type="submit">Post Tribute</button>
-    </form>
+    <!-- Guestbook / Tributes Section -->
+    <section id="guestbook">
+        <h2>Leave a Tribute</h2>
 
-    <!-- Where the tributes will appear -->
-    <div id="tribute-list">
-        <!-- Dynamic tributes will show up here -->
-    </div>
-</section>
+        <!-- Form to collect name and message -->
+        <form id="tribute-form">
+            <input type="text" id="tribute-title" placeholder="Title" required>
+            <textarea id="tribute-text" placeholder="Your Message" required></textarea>
+            <input type="text" id="author-name" placeholder="Your Name" required>
+            <button type="submit">Post Tribute</button>
+        </form>
 
+        <!-- Where the tributes will appear -->
+        <div id="tribute-container"></div>
+    </section>
 
     <footer>
         <p>&copy; 2025 Memorial Site</p>
     </footer>
 
-    <script src="app.js"></script>
+    <!-- Firebase Initialization & Tribute Submission Script -->
+    <script type="module">
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyBaNoI9o436jdnO7m6t6yBJIecxrsRp0GE",
+            authDomain: "ghini-pop.firebaseapp.com",
+            projectId: "ghini-pop",
+            storageBucket: "ghini-pop.appspot.com",
+            messagingSenderId: "937988505380",
+            appId: "1:937988505380:web:4407062a111c65f9fffdb1",
+            measurementId: "G-1LZS2QD2Y9"
+        };
+
+        // Initialize Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        // Fetch Tributes from Firestore and display them
+        const tributeContainer = document.getElementById('tribute-container');
+
+        db.collection('tributes').get().then((querySnapshot) => {
+            querySnapshot.forEach((doc) => {
+                const tribute = doc.data();
+                const tributeDiv = document.createElement('div');
+                tributeDiv.classList.add('tribute');
+
+                // Add tribute data to the page
+                tributeDiv.innerHTML = `
+                    <h3>${tribute.tributeTitle}</h3>
+                    <p>${tribute.tributeText}</p>
+                    <p>- By: ${tribute.authorName}</p>
+                    <p>Posted on: ${tribute.datePosted.toDate().toLocaleDateString()}</p>
+                `;
+                tributeContainer.appendChild(tributeDiv);
+            });
+        }).catch((error) => {
+            console.error("Error fetching tributes: ", error);
+        });
+
+        // Handle tribute submission
+        const tributeForm = document.getElementById('tribute-form');
+        tributeForm.addEventListener('submit', (event) => {
+            event.preventDefault();
+
+            const tributeTitle = document.getElementById('tribute-title').value;
+            const tributeText = document.getElementById('tribute-text').value;
+            const authorName = document.getElementById('author-name').value;
+
+            // Add new tribute to Firestore
+            db.collection('tributes').add({
+                tributeTitle: tributeTitle,
+                tributeText: tributeText,
+                authorName: authorName,
+                datePosted: firebase.firestore.FieldValue.serverTimestamp()
+            }).then(() => {
+                alert("Tribute submitted successfully!");
+                tributeForm.reset();
+            }).catch((error) => {
+                console.error("Error adding tribute: ", error);
+            });
+        });
+    </script>
 </body>
 </html>
-<script type="module">
-  // Import the functions you need from the SDKs you need
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-app.js";
-  import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-analytics.js";
-  // TODO: Add SDKs for Firebase products that you want to use
-  // https://firebase.google.com/docs/web/setup#available-libraries
-
-  // Your web app's Firebase configuration
-  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-  const firebaseConfig = {
-    apiKey: "AIzaSyBaNoI9o436jdnO7m6t6yBJIecxrsRp0GE",
-    authDomain: "ghini-pop.firebaseapp.com",
-    projectId: "ghini-pop",
-    storageBucket: "ghini-pop.firebasestorage.app",
-    messagingSenderId: "937988505380",
-    appId: "1:937988505380:web:4407062a111c65f9fffdb1",
-    measurementId: "G-1LZS2QD2Y9"
-  };
-
-  // Initialize Firebase
-  const app = initializeApp(firebaseConfig);
-  const analytics = getAnalytics(app);
-</script><script type="module">
-  // Import the functions you need from the SDKs you need
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-app.js";
-  import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-analytics.js";
-  // TODO: Add SDKs for Firebase products that you want to use
-  // https://firebase.google.com/docs/web/setup#available-libraries
-
-  // Your web app's Firebase configuration
-  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-  const firebaseConfig = {
-    apiKey: "AIzaSyBaNoI9o436jdnO7m6t6yBJIecxrsRp0GE",
-    authDomain: "ghini-pop.firebaseapp.com",
-    projectId: "ghini-pop",
-    storageBucket: "ghini-pop.firebasestorage.app",
-    messagingSenderId: "937988505380",
-    appId: "1:937988505380:web:4407062a111c65f9fffdb1",
-    measurementId: "G-1LZS2QD2Y9"
-  };
-
-  // Initialize Firebase
-  const app = initializeApp(firebaseConfig);
-  const analytics = getAnalytics(app);
-</script>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Memorial Tributes</title>
-  <script src="https://www.gstatic.com/firebasejs/9.9.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.9.1/firebase-firestore.js"></script>
-</head>
-<body>
-  <h1>Memorial Tributes</h1>
-  <div id="tribute-container"></div>
-
-  <script>
-    // Initialize Firebase
-    const firebaseConfig = {
-      apiKey: "YOUR_API_KEY",
-      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-      projectId: "YOUR_PROJECT_ID",
-      storageBucket: "YOUR_PROJECT_ID.appspot.com",
-      messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-      appId: "YOUR_APP_ID"
-    };
-
-    // Initialize Firebase
-    const app = firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
-
-    // Get tributes from Firestore
-    const tributeContainer = document.getElementById('tribute-container');
-
-    // Fetch tributes collection
-    db.collection('tributes').get().then((querySnapshot) => {
-      querySnapshot.forEach((doc) => {
-        // For each tribute, create a new div with the data
-        const tribute = doc.data();
-        const tributeDiv = document.createElement('div');
-        tributeDiv.classList.add('tribute');
-
-        // Add title
-        const title = document.createElement('h2');
-        title.innerText = tribute.tributeTitle;
-        tributeDiv.appendChild(title);
-
-        // Add tribute text
-        const text = document.createElement('p');
-        text.innerText = tribute.tributeText;
-        tributeDiv.appendChild(text);
-
-        // Add author name
-        const author = document.createElement('p');
-        author.innerText = `- By: ${tribute.authorName}`;
-        tributeDiv.appendChild(author);
-
-        // Add date posted (convert timestamp to human-readable format)
-        const date = document.createElement('p');
-        date.innerText = `Posted on: ${tribute.datePosted.toDate().toLocaleDateString()}`;
-        tributeDiv.appendChild(date);
-
-        // Append the tribute div to the container
-        tributeContainer.appendChild(tributeDiv);
-      });
-    }).catch((error) => {
-      console.error("Error fetching tributes: ", error);
-    });
-  </script>
-</body>
-</html>
-<h3>Add a Tribute</h3>
-<form id="tribute-form">
-  <label for="tribute-title">Title:</label>
-  <input type="text" id="tribute-title" required><br>
-  
-  <label for="tribute-text">Tribute Text:</label><br>
-  <textarea id="tribute-text" required></textarea><br>
-  
-  <label for="author-name">Your Name:</label>
-  <input type="text" id="author-name" required><br>
-
-  <button type="submit">Submit Tribute</button>
-</form>

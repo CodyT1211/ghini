@@ -1,4 +1,4 @@
-// Handle form submission
+// Handle form submission for local tribute list (page-based)
 document.getElementById('tribute-form').addEventListener('submit', function(e) {
     e.preventDefault(); // Prevent page reload
 
@@ -20,34 +20,7 @@ document.getElementById('tribute-form').addEventListener('submit', function(e) {
         alert('Please enter both name and message!');
     }
 });
-// Select the form and tribute list
-const form = document.getElementById('tribute-form');
-const tributeList = document.getElementById('tribute-list');
 
-// Event listener for form submission
-form.addEventListener('submit', function(event) {
-    event.preventDefault(); // Prevent page refresh
-
-    // Get name and message from the form
-    const name = document.getElementById('name').value;
-    const message = document.getElementById('message').value;
-
-    // Create a new div to display the tribute
-    const tributeDiv = document.createElement('div');
-    tributeDiv.classList.add('tribute');
-
-    // Create HTML content for the tribute
-    tributeDiv.innerHTML = `
-        <h3>${name}</h3>
-        <p>${message}</p>
-    `;
-
-    // Append the new tribute to the list
-    tributeList.appendChild(tributeDiv);
-
-    // Clear the form after submission
-    form.reset();
-});
 // Select the biography content element
 const bioContent = document.getElementById('bio-content');
 
@@ -60,6 +33,8 @@ if (localStorage.getItem('biography')) {
 bioContent.addEventListener('input', function() {
     localStorage.setItem('biography', bioContent.innerHTML);
 });
+
+// Firebase tribute submission
 const tributeForm = document.getElementById('tribute-form');
 
 tributeForm.addEventListener('submit', (event) => {
@@ -82,4 +57,3 @@ tributeForm.addEventListener('submit', (event) => {
     console.error("Error submitting tribute: ", error);
   });
 });
-
