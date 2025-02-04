@@ -60,3 +60,26 @@ if (localStorage.getItem('biography')) {
 bioContent.addEventListener('input', function() {
     localStorage.setItem('biography', bioContent.innerHTML);
 });
+const tributeForm = document.getElementById('tribute-form');
+
+tributeForm.addEventListener('submit', (event) => {
+  event.preventDefault();
+
+  const tributeTitle = document.getElementById('tribute-title').value;
+  const tributeText = document.getElementById('tribute-text').value;
+  const authorName = document.getElementById('author-name').value;
+
+  // Save tribute to Firestore
+  db.collection('tributes').add({
+    tributeTitle: tributeTitle,
+    tributeText: tributeText,
+    authorName: authorName,
+    datePosted: firebase.firestore.FieldValue.serverTimestamp()
+  }).then(() => {
+    alert("Tribute submitted!");
+    tributeForm.reset();
+  }).catch((error) => {
+    console.error("Error submitting tribute: ", error);
+  });
+});
+

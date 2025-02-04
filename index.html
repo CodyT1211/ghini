@@ -54,3 +54,129 @@
     <script src="app.js"></script>
 </body>
 </html>
+<script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-analytics.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
+
+  // Your web app's Firebase configuration
+  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+  const firebaseConfig = {
+    apiKey: "AIzaSyBaNoI9o436jdnO7m6t6yBJIecxrsRp0GE",
+    authDomain: "ghini-pop.firebaseapp.com",
+    projectId: "ghini-pop",
+    storageBucket: "ghini-pop.firebasestorage.app",
+    messagingSenderId: "937988505380",
+    appId: "1:937988505380:web:4407062a111c65f9fffdb1",
+    measurementId: "G-1LZS2QD2Y9"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+</script><script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-analytics.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
+
+  // Your web app's Firebase configuration
+  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+  const firebaseConfig = {
+    apiKey: "AIzaSyBaNoI9o436jdnO7m6t6yBJIecxrsRp0GE",
+    authDomain: "ghini-pop.firebaseapp.com",
+    projectId: "ghini-pop",
+    storageBucket: "ghini-pop.firebasestorage.app",
+    messagingSenderId: "937988505380",
+    appId: "1:937988505380:web:4407062a111c65f9fffdb1",
+    measurementId: "G-1LZS2QD2Y9"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+</script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Memorial Tributes</title>
+  <script src="https://www.gstatic.com/firebasejs/9.9.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.9.1/firebase-firestore.js"></script>
+</head>
+<body>
+  <h1>Memorial Tributes</h1>
+  <div id="tribute-container"></div>
+
+  <script>
+    // Initialize Firebase
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_PROJECT_ID.appspot.com",
+      messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
+
+    // Initialize Firebase
+    const app = firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    // Get tributes from Firestore
+    const tributeContainer = document.getElementById('tribute-container');
+
+    // Fetch tributes collection
+    db.collection('tributes').get().then((querySnapshot) => {
+      querySnapshot.forEach((doc) => {
+        // For each tribute, create a new div with the data
+        const tribute = doc.data();
+        const tributeDiv = document.createElement('div');
+        tributeDiv.classList.add('tribute');
+
+        // Add title
+        const title = document.createElement('h2');
+        title.innerText = tribute.tributeTitle;
+        tributeDiv.appendChild(title);
+
+        // Add tribute text
+        const text = document.createElement('p');
+        text.innerText = tribute.tributeText;
+        tributeDiv.appendChild(text);
+
+        // Add author name
+        const author = document.createElement('p');
+        author.innerText = `- By: ${tribute.authorName}`;
+        tributeDiv.appendChild(author);
+
+        // Add date posted (convert timestamp to human-readable format)
+        const date = document.createElement('p');
+        date.innerText = `Posted on: ${tribute.datePosted.toDate().toLocaleDateString()}`;
+        tributeDiv.appendChild(date);
+
+        // Append the tribute div to the container
+        tributeContainer.appendChild(tributeDiv);
+      });
+    }).catch((error) => {
+      console.error("Error fetching tributes: ", error);
+    });
+  </script>
+</body>
+</html>
+<h3>Add a Tribute</h3>
+<form id="tribute-form">
+  <label for="tribute-title">Title:</label>
+  <input type="text" id="tribute-title" required><br>
+  
+  <label for="tribute-text">Tribute Text:</label><br>
+  <textarea id="tribute-text" required></textarea><br>
+  
+  <label for="author-name">Your Name:</label>
+  <input type="text" id="author-name" required><br>
+
+  <button type="submit">Submit Tribute</button>
+</form>
