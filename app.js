@@ -1,6 +1,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.9.1/firebase-app.js";
-import { getFirestore, collection, addDoc, getDocs, doc, setDoc, orderBy, serverTimestamp, onSnapshot } from "https://www.gstatic.com/firebasejs/9.9.1/firebase-firestore.js";
+import { getFirestore, collection, addDoc, doc, setDoc, onSnapshot, orderBy, query, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.9.1/firebase-firestore.js";
 
+// Firebase config
 const firebaseConfig = {
   apiKey: "YOUR_API_KEY",
   authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
@@ -13,14 +14,14 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// Form and tribute container
+// ======= Tribute Section ======= //
 const form = document.getElementById('tribute-form');
 const tributeContainer = document.getElementById('tribute-container');
 
 // Real-time listener for tributes
-onSnapshot(collection(db, 'tributes'), (snapshot) => {
+onSnapshot(query(collection(db, 'tributes'), orderBy('timestamp', 'desc')), (snapshot) => {
   tributeContainer.innerHTML = ''; // Clear existing tributes
-  snapshot.docs.forEach(doc => {
+  snapshot.forEach(doc => {
     const tribute = doc.data();
     const tributeDiv = document.createElement('div');
     tributeDiv.classList.add('tribute');
@@ -28,7 +29,7 @@ onSnapshot(collection(db, 'tributes'), (snapshot) => {
       <h3>${tribute.tributeTitle}</h3>
       <p>${tribute.tributeText}</p>
       <p>- By: ${tribute.authorName}</p>
-      <p>Posted on: ${tribute.timestamp.toDate().toLocaleDateString()}</p>
+      <small>Posted on: ${tribute.timestamp?.toDate().toLocaleString()}</small>
     `;
     tributeContainer.appendChild(tributeDiv);
   });
@@ -59,17 +60,20 @@ form.addEventListener('submit', async (event) => {
   }
 });
 
-// Biography section logic
+// ======= Biography Section ======= //
 const bioContent = document.getElementById('bio-content');
 const bioRef = doc(db, 'biographies', 'john-doe');
 
-async function loadBiography() {
-  const bioSnapshot = await getDocs(bioRef);
-  if (bioSnapshot.exists()) {
-    bioContent.innerHTML = bioSnapshot.data().bioText;
+// Real-time listener for biography
+onSnapshot(bioRef, (doc) => {
+  if (doc.exists()) {
+    bioContent.innerHTML = doc.data().bioText || 'Click here to edit the biography.';
+  } else {
+    console.log('Biography document does not exist.');
   }
-}
+});
 
+// Save biography updates on input
 bioContent.addEventListener('input', async () => {
   try {
     await setDoc(bioRef, { bioText: bioContent.innerHTML }, { merge: true });
@@ -78,5 +82,3 @@ bioContent.addEventListener('input', async () => {
     console.error('Error updating biography:', error);
   }
 });
-
-loadBiography();
