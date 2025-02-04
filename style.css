@@ -16,17 +16,25 @@ body {
 }
 
 /* Header styles */
-#header-image {
-    width: 150px; /* Adjust size */
-    height: auto;
-    margin-right: 20px; /* Space between image and text */
-    float: left; /* Align image to the left */
-}
 header {
     background-color: #333;
     color: white;
     padding: 10px 20px;
     text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+#header-image {
+    max-width: 150px;  /* Adjust size with max-width */
+    height: auto;
+    margin-right: 20px; /* Space between image and text */
+}
+
+h1 {
+    margin-left: 20px; /* Add some space between the image and header text */
 }
 
 /* Navigation styles */
@@ -90,44 +98,4 @@ button {
 }
 
 button:hover {
-    background-color: #45a049;
-}
-
-/* Tribute list section with scrolling */
-#tribute-list {
-    max-height: 300px;   /* Set max height for the tribute list */
-    overflow-y: auto;    /* Enable vertical scrolling */
-    margin-top: 20px;
-    border: 1px solid #ccc;
-    padding: 10px;
-}
-
-/* Footer should stay at the bottom */
-footer {
-    margin-top: auto;  /* Push footer to the bottom */
-    background-color: #333;
-    color: white;
-    text-align: center;
-    padding: 10px 0;
-}
-
-/* Ensure content doesn't overlap buttons or sections */
-#tribute-list {
-    margin-top: 20px;
-}
-
-/* Prevent horizontal scroll and ensure responsiveness */
-html, body {
-    overflow-x: hidden;
-}
-
-/* Responsive design (for smaller screens) */
-@media (max-width: 600px) {
-    nav ul {
-        text-align: center;
-    }
-    nav ul li {
-        display: block;
-        margin: 5px 0;
-    }
-}
+    background-color: #45a04
