@@ -1,125 +1,59 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>In Memory of Frank Grimes</title>
-    <link rel="stylesheet" href="style.css">
-    
-    <!-- Firebase SDKs -->
-    <script src="https://www.gstatic.com/firebasejs/9.9.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.9.1/firebase-firestore.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>In Memory of Frank Grimes</title>
+  <link rel="stylesheet" href="style.css">
+  
+  <!-- Firebase SDKs (Modular Syntax) -->
+  <script type="module" src="https://www.gstatic.com/firebasejs/9.9.1/firebase-app.js"></script>
+  <script type="module" src="https://www.gstatic.com/firebasejs/9.9.1/firebase-firestore.js"></script>
 </head>
 <body>
-    <header>
+  <header>
     <img src="https://raw.githubusercontent.com/CodyT1211/ghini/refs/heads/main/Frank_Grimes_as_a_child.webp" alt="Frank Grimes" id="header-image">
- 
     <h1>In Memory of Frank Grimes</h1>
     <nav>
-        <ul>
-            <li><a href="#biography">Biography</a></li>
-            <li><a href="#gallery">Gallery</a></li>
-            <li><a href="#guestbook">Tributes</a></li>
-        </ul>
+      <ul>
+        <li><a href="#biography">Biography</a></li>
+        <li><a href="#gallery">Gallery</a></li>
+        <li><a href="#guestbook">Tributes</a></li>
+      </ul>
     </nav>
-</header>
+  </header>
 
+  <!-- Biography Section -->
+  <section id="biography">
+    <h2>Biography</h2>
+    <div id="bio-content" contenteditable="true">
+      <p>Click here to edit the biography.</p>
+    </div>
+  </section>
 
-    <!-- Biography Section -->
-    <section id="biography">
-        <h2>Biography</h2>
-        <div id="bio-content" contenteditable="true">
-            <p>Click here to edit the biography.</p>
-        </div>
-    </section>
+  <!-- Gallery Section -->
+  <section id="gallery">
+    <h2>Gallery</h2>
+    <!-- Image Gallery Goes Here -->
+  </section>
 
-    <!-- Gallery Section -->
-    <section id="gallery">
-        <h2>Gallery</h2>
-        <!-- Image Gallery Goes Here -->
-    </section>
+  <!-- Guestbook / Tributes Section -->
+  <section id="guestbook">
+    <h2>Leave a Tribute</h2>
+    <form id="tribute-form">
+      <input type="text" id="tribute-title" placeholder="Title" required>
+      <textarea id="tribute-text" placeholder="Your Message" required></textarea>
+      <input type="text" id="author-name" placeholder="Your Name" required>
+      <button type="submit">Post Tribute</button>
+    </form>
+    <div id="tribute-container"></div>
+  </section>
 
-    <!-- Guestbook / Tributes Section -->
-    <section id="guestbook">
-        <h2>Leave a Tribute</h2>
+  <footer>
+    <p>&copy; 2025 Memorial Site</p>
+  </footer>
 
-        <!-- Form to collect name and message -->
-        <form id="tribute-form">
-            <input type="text" id="tribute-title" placeholder="Title" required>
-            <textarea id="tribute-text" placeholder="Your Message" required></textarea>
-            <input type="text" id="author-name" placeholder="Your Name" required>
-            <button type="submit">Post Tribute</button>
-        </form>
-
-        <!-- Where the tributes will appear -->
-        <div id="tribute-container"></div>
-    </section>
-
-    <footer>
-        <p>&copy; 2025 Memorial Site</p>
-    </footer>
-
-    <!-- Firebase Initialization & Tribute Submission Script -->
-    <script type="module">
-        // Firebase Configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyBaNoI9o436jdnO7m6t6yBJIecxrsRp0GE",
-            authDomain: "ghini-pop.firebaseapp.com",
-            projectId: "ghini-pop",
-            storageBucket: "ghini-pop.appspot.com",
-            messagingSenderId: "937988505380",
-            appId: "1:937988505380:web:4407062a111c65f9fffdb1",
-            measurementId: "G-1LZS2QD2Y9"
-        };
-
-        // Initialize Firebase
-        const app = firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-
-        // Fetch Tributes from Firestore and display them
-        const tributeContainer = document.getElementById('tribute-container');
-
-        db.collection('tributes').get().then((querySnapshot) => {
-            querySnapshot.forEach((doc) => {
-                const tribute = doc.data();
-                const tributeDiv = document.createElement('div');
-                tributeDiv.classList.add('tribute');
-
-                // Add tribute data to the page
-                tributeDiv.innerHTML = `
-                    <h3>${tribute.tributeTitle}</h3>
-                    <p>${tribute.tributeText}</p>
-                    <p>- By: ${tribute.authorName}</p>
-                    <p>Posted on: ${tribute.datePosted.toDate().toLocaleDateString()}</p>
-                `;
-                tributeContainer.appendChild(tributeDiv);
-            });
-        }).catch((error) => {
-            console.error("Error fetching tributes: ", error);
-        });
-
-        // Handle tribute submission
-        const tributeForm = document.getElementById('tribute-form');
-        tributeForm.addEventListener('submit', (event) => {
-            event.preventDefault();
-
-            const tributeTitle = document.getElementById('tribute-title').value;
-            const tributeText = document.getElementById('tribute-text').value;
-            const authorName = document.getElementById('author-name').value;
-
-            // Add new tribute to Firestore
-            db.collection('tributes').add({
-                tributeTitle: tributeTitle,
-                tributeText: tributeText,
-                authorName: authorName,
-                datePosted: firebase.firestore.FieldValue.serverTimestamp()
-            }).then(() => {
-                alert("Tribute submitted successfully!");
-                tributeForm.reset();
-            }).catch((error) => {
-                console.error("Error adding tribute: ", error);
-            });
-        });
-    </script>
+  <!-- App Logic -->
+  <script type="module" src="app.js"></script>
 </body>
 </html>
