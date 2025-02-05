@@ -120,48 +120,41 @@ bioContent.addEventListener('input', function () {
   }, 500); // Wait 500ms before saving
 });
 // Image Upload to Imgur
-const clientId = '6febd7ab930d37a'; // Your Imgur Client ID
-const imageInput = document.getElementById('image-input');
-const uploadButton = document.getElementById('upload-button');
-const uploadedImageContainer = document.getElementById('uploaded-image-container');
+document.getElementById('upload-button').addEventListener('click', async () => {
+  const fileInput = document.getElementById('file-input');
+  const status = document.getElementById('upload-status');
+  const uploadedImageDiv = document.getElementById('uploaded-image');
 
-uploadButton.addEventListener('click', async () => {
-  const file = imageInput.files[0];
-  if (!file) {
-    alert('Please select an image to upload.');
+  if (fileInput.files.length === 0) {
+    status.textContent = "Please select an image to upload.";
     return;
   }
 
+  const file = fileInput.files[0];
   const formData = new FormData();
   formData.append('image', file);
+
+  status.textContent = "Uploading...";
 
   try {
     const response = await fetch('https://api.imgur.com/3/image', {
       method: 'POST',
       headers: {
-        Authorization: `Client-ID ${clientId}`
+        Authorization: 'Client-ID 6febd7ab930d37a'
       },
       body: formData
     });
 
     const result = await response.json();
+
     if (result.success) {
-      const imageUrl = result.data.link;
-      displayUploadedImage(imageUrl);
-      console.log('Image uploaded successfully:', imageUrl);
+      status.textContent = "Upload successful!";
+      uploadedImageDiv.innerHTML = `<img src="${result.data.link}" alt="Uploaded Image" style="max-width: 100%;">`;
     } else {
-      console.error('Failed to upload image:', result);
+      status.textContent = "Upload failed. Please try again.";
     }
   } catch (error) {
-    console.error('Error uploading image:', error);
+    status.textContent = "An error occurred. Please try again.";
+    console.error(error);
   }
 });
-
-function displayUploadedImage(imageUrl) {
-  const img = document.createElement('img');
-  img.src = imageUrl;
-  img.alt = 'Uploaded Image';
-  img.style.maxWidth = '100%';
-  uploadedImageContainer.innerHTML = ''; // Clear previous images
-  uploadedImageContainer.appendChild(img);
-}
