@@ -119,3 +119,42 @@ bioContent.addEventListener('input', function () {
     }
   }, 500); // Wait 500ms before saving
 });
+// Image Upload to Imgur
+document.getElementById('upload-button').addEventListener('click', async () => {
+  const fileInput = document.getElementById('file-input');
+  const status = document.getElementById('upload-status');
+  const uploadedImageDiv = document.getElementById('uploaded-image');
+
+  if (fileInput.files.length === 0) {
+    status.textContent = "Please select an image to upload.";
+    return;
+  }
+
+  const file = fileInput.files[0];
+  const formData = new FormData();
+  formData.append('image', file);
+
+  status.textContent = "Uploading...";
+
+  try {
+    const response = await fetch('https://api.imgur.com/3/image', {
+      method: 'POST',
+      headers: {
+        Authorization: 'Client-ID 6febd7ab930d37a'
+      },
+      body: formData
+    });
+
+    const result = await response.json();
+
+    if (result.success) {
+      status.textContent = "Upload successful!";
+      uploadedImageDiv.innerHTML = `<img src="${result.data.link}" alt="Uploaded Image" style="max-width: 100%;">`;
+    } else {
+      status.textContent = "Upload failed. Please try again.";
+    }
+  } catch (error) {
+    status.textContent = "An error occurred. Please try again.";
+    console.error(error);
+  }
+});

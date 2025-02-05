@@ -23,7 +23,7 @@
   <section id="video">
     <h2>In Loving Memory - Video Tribute</h2>
     <div class="video-container">
-      <iframe width="560" height="315" src="https://www.youtube.com/embed/Rtr02bwgnqA?si=K11C-_M8ib24ZSWU"
+      <iframe width="560" height="315" src="https://www.youtube.com/embed/Rtr02bwgnqA?si=K11C-_M8ib24ZSWU" 
               title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen>
       </iframe>
     </div>
@@ -49,6 +49,15 @@
     </div>
   </section>
 
+  <!-- Image Upload Section -->
+  <section id="image-upload">
+    <h2>Upload an Image</h2>
+    <input type="file" id="file-input" accept="image/*">
+    <button id="upload-button">Upload to Imgur</button>
+    <p id="upload-status"></p>
+    <div id="uploaded-image"></div>
+  </section>
+
   <!-- Guestbook / Tributes Section -->
   <section id="guestbook">
     <h2>Leave a Tribute</h2>
@@ -65,50 +74,40 @@
     <p>&copy; 2025 Memorial Site</p>
   </footer>
 
-  <!-- Firebase and App Logic -->
+  <!-- Firebase and Imgur Integration -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.9.1/firebase-app.js";
     import { getFirestore, collection, addDoc, getDocs, doc, getDoc, setDoc, serverTimestamp, query, orderBy } from "https://www.gstatic.com/firebasejs/9.9.1/firebase-firestore.js";
 
     const firebaseConfig = {
-      apiKey: "AIzaSyBaNoI9o436jdnO7m6t6yBJIecxrsRp0GE",
-      authDomain: "ghini-pop.firebaseapp.com",
-      projectId: "ghini-pop",
+      apiKey: "YOUR_FIREBASE_API_KEY",
+      authDomain: "YOUR_FIREBASE_AUTH_DOMAIN",
+      projectId: "YOUR_FIREBASE_PROJECT_ID",
     };
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // Biography Section
+    // Biography Section Logic (same as your existing one)
     const bioContent = document.getElementById('bio-content');
     const bioRef = doc(db, 'biography', 'Mq6aZovOKcG65Nw1QnBM');
 
-    getDoc(bioRef)
-      .then((docSnapshot) => {
-        if (docSnapshot.exists()) {
-          const data = docSnapshot.data();
-          const bioText = data.Biography || "Biography not found.";
-          const nameText = data.Name || "Unknown";
-          bioContent.innerHTML = `<h3>${nameText}</h3><p>${bioText}</p>`;
-        } else {
-          console.log("No biography document found!");
-        }
-      })
-      .catch((error) => {
-        console.error("Error fetching biography:", error);
-      });
+    getDoc(bioRef).then((docSnapshot) => {
+      if (docSnapshot.exists()) {
+        const data = docSnapshot.data();
+        bioContent.innerHTML = `<h3>${data.Name || "Unknown"}</h3><p>${data.Biography || "Biography not found."}</p>`;
+      } else {
+        console.log("No biography document found!");
+      }
+    }).catch((error) => console.error("Error fetching biography:", error));
 
     bioContent.addEventListener('input', () => {
       setDoc(bioRef, { Biography: bioContent.innerHTML }, { merge: true })
-        .then(() => {
-          console.log("Biography updated!");
-        })
-        .catch((error) => {
-          console.error("Error updating biography:", error);
-        });
+        .then(() => console.log("Biography updated!"))
+        .catch((error) => console.error("Error updating biography:", error));
     });
 
-    // Tributes Section
+    // Tributes Section Logic (same as your existing one)
     const form = document.getElementById('tribute-form');
     const tributeList = document.getElementById('tribute-container');
 
@@ -128,7 +127,7 @@
           });
           console.log("Tribute saved successfully!");
           form.reset();
-          loadTributes(); // Refresh the tributes list
+          loadTributes();
         } catch (error) {
           console.error("Error saving tribute:", error);
         }
@@ -144,15 +143,14 @@
         querySnapshot.forEach((doc) => {
           const tribute = doc.data();
           const date = tribute.datePosted ? tribute.datePosted.toDate().toLocaleString() : '';
-          const tributeDiv = document.createElement('div');
-          tributeDiv.classList.add('tribute');
-          tributeDiv.innerHTML = `
-            <h3>${tribute.tributeTitle || 'Untitled Tribute'}</h3>
-            <p><strong>${tribute.authorName || 'Anonymous'}</strong></p>
-            <p>${tribute.tributeText || ''}</p>
-            <p><small>${date}</small></p>
+          tributeList.innerHTML += `
+            <div class="tribute">
+              <h3>${tribute.tributeTitle || 'Untitled Tribute'}</h3>
+              <p><strong>${tribute.authorName || 'Anonymous'}</strong></p>
+              <p>${tribute.tributeText || ''}</p>
+              <p><small>${date}</small></p>
+            </div>
           `;
-          tributeList.appendChild(tributeDiv);
         });
       } catch (error) {
         console.error("Error fetching tributes:", error);
@@ -160,6 +158,46 @@
     }
 
     window.addEventListener('load', loadTributes);
+
+    // Imgur Image Upload Logic
+    document.getElementById('upload-button').addEventListener('click', async () => {
+      const fileInput = document.getElementById('file-input');
+      const status = document.getElementById('upload-status');
+      const uploadedImageDiv = document.getElementById('uploaded-image');
+
+      if (fileInput.files.length === 0) {
+        status.textContent = "Please select an image to upload.";
+        return;
+      }
+
+      const file = fileInput.files[0];
+      const formData = new FormData();
+      formData.append('image', file);
+
+      status.textContent = "Uploading...";
+
+      try {
+        const response = await fetch('https://api.imgur.com/3/image', {
+          method: 'POST',
+          headers: {
+            Authorization: 'Client-ID 6febd7ab930d37a'
+          },
+          body: formData
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          status.textContent = "Upload successful!";
+          uploadedImageDiv.innerHTML = `<img src="${result.data.link}" alt="Uploaded Image" style="max-width: 100%;">`;
+        } else {
+          status.textContent = "Upload failed. Please try again.";
+        }
+      } catch (error) {
+        status.textContent = "An error occurred. Please try again.";
+        console.error(error);
+      }
+    });
   </script>
 </body>
 </html>
