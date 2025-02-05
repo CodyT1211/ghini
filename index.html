@@ -5,10 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>In Memory of Frank Grimes</title>
   <link rel="stylesheet" href="style.css">
-  
-  <!-- Firebase SDKs (Modular Syntax) -->
-  <script type="module" src="https://www.gstatic.com/firebasejs/9.9.1/firebase-app.js"></script>
-  <script type="module" src="https://www.gstatic.com/firebasejs/9.9.1/firebase-firestore.js"></script>
 </head>
 <body>
   <header>
@@ -23,23 +19,21 @@
     </nav>
   </header>
 
-  <!-- Embed YouTube Video Section (Above Biography) -->
+  <!-- Video Tribute Section -->
   <section id="video">
     <h2>In Loving Memory - Video Tribute</h2>
     <div class="video-container">
-      <iframe width="560" height="315" src="https://www.youtube.com/embed/Rtr02bwgnqA?si=K11C-_M8ib24ZSWU" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+      <iframe width="560" height="315" src="https://www.youtube.com/embed/Rtr02bwgnqA?si=K11C-_M8ib24ZSWU"
+              title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen>
+      </iframe>
     </div>
   </section>
 
   <!-- Biography Section -->
   <section id="biography">
     <h2>Biography</h2>
-    <div id="bio-content" contenteditable="false">
-      <p>A Memorial for Frank Grimes</p>
-      <p>Frank Grimes was a really nice guy. He worked super hard and always tried to do his best. He had a lot of books and fancy degrees, and I thought that was pretty cool. He liked things to be perfect, but that’s okay.</p>
-      <p>He didn’t always laugh at my jokes, but that’s okay too. I still liked him. He was my friend, even though he wasn’t always happy about stuff. I’ll miss him. He was a good guy.</p>
-      <p>Bye-bye, Grimey. I hope you’re up in heaven eating lots of lobster like I do.</p>
-      <p><strong>Homer Simpson</strong></p>
+    <div id="bio-content" contenteditable="true">
+      <p>Loading biography...</p>
     </div>
   </section>
 
@@ -71,7 +65,101 @@
     <p>&copy; 2025 Memorial Site</p>
   </footer>
 
-  <!-- App Logic -->
-  <script type="module" src="app.js"></script>
+  <!-- Firebase and App Logic -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.9.1/firebase-app.js";
+    import { getFirestore, collection, addDoc, getDocs, doc, getDoc, setDoc, serverTimestamp, query, orderBy } from "https://www.gstatic.com/firebasejs/9.9.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBaNoI9o436jdnO7m6t6yBJIecxrsRp0GE",
+      authDomain: "ghini-pop.firebaseapp.com",
+      projectId: "ghini-pop",
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // Biography Section
+    const bioContent = document.getElementById('bio-content');
+    const bioRef = doc(db, 'biography', 'Mq6aZovOKcG65Nw1QnBM');
+
+    getDoc(bioRef)
+      .then((docSnapshot) => {
+        if (docSnapshot.exists()) {
+          const data = docSnapshot.data();
+          const bioText = data.Biography || "Biography not found.";
+          const nameText = data.Name || "Unknown";
+          bioContent.innerHTML = `<h3>${nameText}</h3><p>${bioText}</p>`;
+        } else {
+          console.log("No biography document found!");
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching biography:", error);
+      });
+
+    bioContent.addEventListener('input', () => {
+      setDoc(bioRef, { Biography: bioContent.innerHTML }, { merge: true })
+        .then(() => {
+          console.log("Biography updated!");
+        })
+        .catch((error) => {
+          console.error("Error updating biography:", error);
+        });
+    });
+
+    // Tributes Section
+    const form = document.getElementById('tribute-form');
+    const tributeList = document.getElementById('tribute-container');
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const title = document.getElementById('tribute-title').value;
+      const message = document.getElementById('tribute-text').value;
+      const name = document.getElementById('author-name').value;
+
+      if (title && message && name) {
+        try {
+          await addDoc(collection(db, 'tributes'), {
+            tributeTitle: title,
+            authorName: name,
+            tributeText: message,
+            datePosted: serverTimestamp()
+          });
+          console.log("Tribute saved successfully!");
+          form.reset();
+          loadTributes(); // Refresh the tributes list
+        } catch (error) {
+          console.error("Error saving tribute:", error);
+        }
+      } else {
+        alert('Please fill out all fields!');
+      }
+    });
+
+    async function loadTributes() {
+      tributeList.innerHTML = '';
+      try {
+        const querySnapshot = await getDocs(query(collection(db, 'tributes'), orderBy('datePosted', 'desc')));
+        querySnapshot.forEach((doc) => {
+          const tribute = doc.data();
+          const date = tribute.datePosted ? tribute.datePosted.toDate().toLocaleString() : '';
+          const tributeDiv = document.createElement('div');
+          tributeDiv.classList.add('tribute');
+          tributeDiv.innerHTML = `
+            <h3>${tribute.tributeTitle || 'Untitled Tribute'}</h3>
+            <p><strong>${tribute.authorName || 'Anonymous'}</strong></p>
+            <p>${tribute.tributeText || ''}</p>
+            <p><small>${date}</small></p>
+          `;
+          tributeList.appendChild(tributeDiv);
+        });
+      } catch (error) {
+        console.error("Error fetching tributes:", error);
+      }
+    }
+
+    window.addEventListener('load', loadTributes);
+  </script>
 </body>
 </html>

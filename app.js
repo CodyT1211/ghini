@@ -1,6 +1,6 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
-import { getFirestore, collection, addDoc, getDocs, doc, getDoc, setDoc, serverTimestamp, orderBy } from "firebase/firestore";
+import { getFirestore, collection, addDoc, getDocs, doc, getDoc, setDoc, serverTimestamp, orderBy, query } from "firebase/firestore";
 import { getAnalytics } from "firebase/analytics";
 
 // Your web app's Firebase configuration
@@ -28,43 +28,40 @@ const tributeList = document.getElementById('tribute-container');
 form.addEventListener('submit', async function (event) {
   event.preventDefault(); // Prevent page reload
 
-  // Get name and message from the form
+  // Get values from the form
+  const title = document.getElementById('tribute-title').value;
   const name = document.getElementById('author-name').value;
   const message = document.getElementById('tribute-text').value;
 
-  if (name && message) {
+  if (title && name && message) {
     console.log("Preparing to save tribute...");
 
-    // Add tribute to the page immediately
-    const tributeDiv = document.createElement('div');
-    tributeDiv.classList.add('tribute');
-    tributeDiv.innerHTML = `<h3>${name}</h3><p>${message}</p>`;
-    tributeList.appendChild(tributeDiv);
-
     try {
+      // Add tribute to Firestore
       await addDoc(collection(db, 'tributes'), {
+        tributeTitle: title,
         authorName: name,
         tributeText: message,
-        datePosted: serverTimestamp() // Automatically adds timestamp
+        datePosted: serverTimestamp()
       });
       console.log("Tribute saved successfully!");
+      form.reset();
+      loadTributes(); // Refresh tributes after successful submission
     } catch (error) {
       console.error("Error saving tribute: ", error);
     }
-
-    // Clear the form
-    form.reset();
   } else {
-    alert('Please enter both name and message!');
+    alert('Please fill out all fields!');
   }
 });
 
-// Load tributes from Firestore when the page loads
-window.addEventListener('load', async function () {
+// Load tributes from Firestore
+async function loadTributes() {
+  tributeList.innerHTML = ''; // Clear existing tributes
   try {
-    const querySnapshot = await getDocs(collection(db, 'tributes'), orderBy('datePosted', 'desc'));
+    const querySnapshot = await getDocs(query(collection(db, 'tributes'), orderBy('datePosted', 'desc')));
     if (querySnapshot.empty) {
-      console.log("No tributes found.");
+      tributeList.innerHTML = '<p>No tributes yet. Be the first to leave one!</p>';
     } else {
       querySnapshot.forEach((doc) => {
         const tribute = doc.data();
@@ -82,16 +79,19 @@ window.addEventListener('load', async function () {
   } catch (error) {
     console.error("Error fetching tributes: ", error);
   }
-});
+}
+
+// Load tributes when the page loads
+window.addEventListener('load', loadTributes);
 
 // Biography logic
 const bioContent = document.getElementById('bio-content');
+const bioRef = doc(db, 'biography', 'Mq6aZovOKcG65Nw1QnBM');
 
-// Check if there’s saved biography content in Firestore
-const bioRef = doc(db, 'biography', 'Mq6aZovOKcG65Nw1QnBM'); // Use the correct document ID
-
-getDoc(bioRef)
-  .then((docSnapshot) => {
+// Fetch biography content from Firestore
+async function loadBiography() {
+  try {
+    const docSnapshot = await getDoc(bioRef);
     if (docSnapshot.exists()) {
       console.log("Biography Document:", docSnapshot.data());
       const bioText = docSnapshot.data().Biography || "Biography not found in Firestore.";
@@ -99,20 +99,23 @@ getDoc(bioRef)
     } else {
       console.log("No such document in biography collection!");
     }
-  })
-  .catch((error) => {
+  } catch (error) {
     console.error("Error fetching biography: ", error);
-  });
+  }
+}
 
-// Save biography updates to Firestore when content changes
+loadBiography();
+
+// Save biography updates to Firestore (with debounce to reduce writes)
+let debounceTimeout;
 bioContent.addEventListener('input', function () {
-  setDoc(bioRef, {
-    Biography: bioContent.innerHTML
-  }, { merge: true })
-    .then(() => {
+  clearTimeout(debounceTimeout);
+  debounceTimeout = setTimeout(async () => {
+    try {
+      await setDoc(bioRef, { Biography: bioContent.innerHTML }, { merge: true });
       console.log("Biography updated!");
-    })
-    .catch((error) => {
+    } catch (error) {
       console.error("Error updating biography: ", error);
-    });
+    }
+  }, 500); // Wait 500ms before saving
 });
